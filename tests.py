@@ -152,3 +152,33 @@ def test_correct_selected_choices_raises_exception_when_exceeding_max_selections
 
     with pytest.raises(Exception):
         question.correct_selected_choices([choice1.id, choice2.id])
+
+@pytest.fixture
+def question_with_choices():
+    question = Question(title='q1', max_selections=2)
+    c1 = question.add_choice('A')
+    c2 = question.add_choice('B')
+    c3 = question.add_choice('C')
+    question.set_correct_choices([c1.id, c3.id])
+    return question
+
+
+def test_correct_selected_choices_with_fixture(question_with_choices):
+    question = question_with_choices
+
+    selected = [1, 2]  
+    result = question.correct_selected_choices(selected)
+
+    assert result == [1]
+
+
+def test_remove_choice_with_fixture(question_with_choices):
+    question = question_with_choices
+
+    initial_len = len(question.choices)
+    choice_to_remove = question.choices[0]
+
+    question.remove_choice_by_id(choice_to_remove.id)
+
+    assert len(question.choices) == initial_len - 1
+    assert choice_to_remove not in question.choices
